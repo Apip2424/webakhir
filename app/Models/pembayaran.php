@@ -10,6 +10,44 @@ class Pembayaran extends Model
 
     protected $table = 'pembayaran';
 
+    //search
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function($query, $search){
+            return $query->orWhereHas('barang', function ($subQuery) use ($search) {
+                $subQuery->where('nama_barang', 'like', '%' . $search . '%');
+            })
+            ->orWhereHas('konsumen', function ($subQuery) use ($search) {
+                $subQuery->where('nama_konsumen', 'like', '%' . $search . '%');
+            })
+            ->orWhere('jumlah_pesanan', 'like', '%' . $search . '%')
+            ->orWhere('jenis_pembayaran', 'like', '%' . $search . '%')
+            ->orWhere('total', 'like', '%' . $search . '%');
+        });
+    }
+    
+    public function scopeTgl($query, array $filters)
+{
+    $query->when($filters['tgl_awal'] ?? false, function($query, $tgl_awal) use ($filters){
+        $query->whereDate('tanggal_pembayaran', '>=', $tgl_awal);
+
+        // If end date is provided, add a condition for it
+        if (isset($filters['tgl_akhir']) && $filters['tgl_akhir']) {
+            $query->whereDate('tanggal_pembayaran', '<=', $filters['tgl_akhir']);
+        }
+
+        return $query;
+    });
+}
+
+    
+
+
+
+    
+    
+
     protected $fillable = [
         'nama_barang_id', 'konsumen_id', 'tanggal_pembayaran', 'jumlah_pesanan', 'jenis_pembayaran', 'total'
     ];
@@ -37,4 +75,6 @@ class Pembayaran extends Model
             }
         });
     }
+
+    
 }

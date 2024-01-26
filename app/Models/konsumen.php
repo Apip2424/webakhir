@@ -22,5 +22,14 @@ class Konsumen extends Model
     {
         return $this->hasOne(Barang::class);
     }
-}
 
+    //search
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function($query, $search){
+            return $query->orWhere('nama_konsumen', 'like', '%' . $search . '%')
+                        ->orWhere('alamat', 'like', '%' . $search . '%')
+                        ->orWhere('no_telp', 'like', '%' . $search . '%');  
+        });
+    }
+}

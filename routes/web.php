@@ -90,6 +90,9 @@ Route::controller(PembayaranController::class)->prefix('pembayaran')->group(func
     Route::get('hapus/{id}', 'hapus')->name('pembayaran.hapus');
     Route::get('hapus-konfirmasi/{id}', 'konfirmasiHapus')->name('pembayaran.hapus.konfirmasi');
     Route::get('/download-pembayaran-pdf', [PembayaranController::class, 'cetakpdf'])->name('cetakpdf');
+    // Route::get('/pembayaran/cetak-pdf', 'PembayaranController@cetakPDF')->name('pembayaran.cetak-pdf');
+
+
     });
 });
 
