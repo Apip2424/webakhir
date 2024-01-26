@@ -13,48 +13,94 @@ class PembayaranController extends Controller
 {
     public function index()
     {
-        $pembayaran = Pembayaran::with(['barang', 'konsumen'])->get();
+        $filters = [
+            'search' => request('search'),
+            'tgl_awal' => request('tgl_awal'),
+            'tgl_akhir' => request('tgl_akhir'),
+        ];
+    
+        $pembayaran = Pembayaran::filter($filters)
+            ->Tgl($filters)
+            ->orderBy('tanggal_pembayaran', 'asc') // Order by payment date in ascending order
+            ->paginate(7);
+    
         return view('pembayaran.index', compact('pembayaran'));
     }
+    
 
-
-    public function cetakpdf(Request $request)
-    {
-        $totalPembayaran = Pembayaran::sum('total');
-        $pembayaran = Pembayaran::limit(20)->get();
-
-
-
-        $pdf = \PDF::loadView('pembayaran.pembayaran-pdf', compact('pembayaran','totalPembayaran'));
-        $pdf->setPaper('A4', 'landscape');
-
-        return $pdf->stream('pembayaran.pdf');
-    }
-
-    public function cari(Request $request)
-    {
-
-        $searchTerm = $request->input('search');
-
-        $pembayaran = Pembayaran::with(['barang', 'konsumen'])
-            ->whereHas('barang', function ($query) use ($searchTerm) {
-                $query->where('nama_barang', 'LIKE', "%$searchTerm%");
-            })
-            ->orWhereHas('konsumen', function ($query) use ($searchTerm) {
-                $query->where('nama_konsumen', 'LIKE', "%$searchTerm%");
-            })
-            ->orWhere('tanggal_pembayaran', 'LIKE', "%$searchTerm%")
-            ->orWhere('jumlah_pesanan', 'LIKE', "%$searchTerm%")
-            ->orWhere('jenis_pembayaran', 'LIKE', "%$searchTerm%")
-            ->orWhere('total', 'LIKE', "%$searchTerm%")
-            ->get();
-
-        return view('pembayaran.index', compact('pembayaran'));
-    }
+    // public function cetakpdf(Request $request)
+    // {
+    //     $totalPembayaran = Pembayaran::sum('total');
+    //     $pembayaran = Pembayaran::limit(20)->get();
 
 
 
+    //     $pdf = \PDF::loadView('pembayaran.pembayaran-pdf', compact('pembayaran','totalPembayaran'));
+    //     $pdf->setPaper('A4', 'landscape');
 
+    //     return $pdf->stream('Mayah.pdf');
+    // }
+
+//     public function cetakpdf(Request $request)
+// {
+//     $filters = [
+//         'search' => $request->input('search'),
+//         'tgl_awal' => $request->input('start_date'),
+//         'tgl_akhir' => $request->input('end_date'),
+//     ];
+
+//     $pembayaran = Pembayaran::filter($filters)->Tgl($filters)->limit(20)->get();
+//     $totalPembayaran = $pembayaran->sum('total');
+
+//     $pdf = \PDF::loadView('pembayaran.pembayaran-pdf', compact('pembayaran', 'totalPembayaran'));
+//     $pdf->setPaper('A4', 'landscape');
+
+//     return $pdf->stream('Mayah.pdf');
+// }
+
+
+public function cetakPDF(Request $request)
+{
+    $filters = [
+        'search' => $request->input('search'),
+        'tgl_awal' => $request->input('tgl_awal'),
+        'tgl_akhir' => $request->input('tgl_akhir'),
+    ];
+
+    $pembayaran = Pembayaran::filter($filters)->Tgl($filters)->get();
+    $totalPembayaran = $pembayaran->sum('total');
+
+    $pdf = PDF::loadView('pembayaran.pembayaran-pdf', compact('pembayaran', 'totalPembayaran'));
+    return $pdf->stream('pembayaran.pdf');
+}
+
+ 
+
+
+
+    // public function cari(Request $request)
+    // {
+
+    //     $searchTerm = $request->input('search');
+
+    //     $pembayaran = Pembayaran::with(['barang', 'konsumen'])
+    //         ->whereHas('barang', function ($query) use ($searchTerm) {
+    //             $query->where('nama_barang', 'LIKE', "%$searchTerm%");
+    //         })
+    //         ->orWhereHas('konsumen', function ($query) use ($searchTerm) {
+    //             $query->where('nama_konsumen', 'LIKE', "%$searchTerm%");
+    //         })
+    //         ->orWhere('tanggal_pembayaran', 'LIKE', "%$searchTerm%")
+    //         ->orWhere('jumlah_pesanan', 'LIKE', "%$searchTerm%")
+    //         ->orWhere('jenis_pembayaran', 'LIKE', "%$searchTerm%")
+    //         ->orWhere('total', 'LIKE', "%$searchTerm%")
+    //         ->get();
+
+    //     return view('pembayaran.index', compact('pembayaran'));
+    // }
+
+   
+    
     public function tambah()
     {
         $barang = Barang::with('detail')->get();

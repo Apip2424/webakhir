@@ -9,22 +9,44 @@ class KonsumenController extends Controller
 {
     public function index()
     {
-        $konsumen = Konsumen::with('pembayaran')->get();
+        // $konsumen = Konsumen::with('pembayaran')->get();
+        // return view('konsumen.index', compact('konsumen'));
+
+        $filtr = Konsumen::latest()->filter(request(['search']));
+        $konsumen = $filtr->paginate(7);
 
         return view('konsumen.index', compact('konsumen'));
     }
 
-    public function cetakpdf()
-    {
+    // public function cetakpdf()
+    // {
        
-        $konsumen = Konsumen::limit(20)->get();
+    //     $konsumen = Konsumen::limit(20)->get();
 
 
+    //     $pdf = \PDF::loadView('konsumen.konsumen-pdf', compact('konsumen'));
+    //     $pdf->setPaper('A4', 'landscape');
+
+    //     return $pdf->stream('konsumen.pdf');
+    // }
+
+    public function cetakpdf(Request $request)
+    {
+        $search = $request->input('search');
+        $konsumen = Konsumen::filter(['search' => $search])->get();
+        
+    
         $pdf = \PDF::loadView('konsumen.konsumen-pdf', compact('konsumen'));
         $pdf->setPaper('A4', 'landscape');
-
+    
         return $pdf->stream('konsumen.pdf');
     }
+
+
+
+
+    
+    
 
     public function tambah()
     {

@@ -12,22 +12,46 @@ class BarangController extends Controller
 {
     public function index(Request $request)
     {
-        $barang = Barang::get();
-
+        // $barang = Barang::get();
+        // return view('barang.index', compact('barang'));
+        $filtr = Barang::latest()->filter(request(['search']));
+        $barang = $filtr->paginate(7);
+        
         return view('barang.index', compact('barang'));
     }
 
-    public function cetakpdf()
-    {
+    // public function cetakpdf()
+    // {
+    //     $barang = Barang::limit(20)->get();
+    //     $pdf = \PDF::loadView('barang.barang-pdf', compact('barang'));
+    //     $pdf->setPaper('A4', 'landscape');
+    //     return $pdf->stream('barang.pdf');
+    // }
 
-        $barang = Barang::limit(20)->get();
+    // public function cetakpdf(Request $request)
+    // {
+    //     $filtr = Barang::latest()->filter($request->all());
+    //     $barang = $filtr->limit(20)->get();
+    
+    //     $pdf = \PDF::loadView('barang.barang-pdf', compact('barang'));
+    //     $pdf->setPaper('A4', 'landscape');
+    
+    //     return $pdf->stream('barang.pdf');
+    // }
 
+    public function cetakpdf(Request $request)
+{
+    $barang = Barang::latest()
+        ->filter(['search' => $request->search])
+        ->paginate(20);
 
-        $pdf = \PDF::loadView('barang.barang-pdf', compact('barang'));
-        $pdf->setPaper('A4', 'landscape');
+    $pdf = \PDF::loadView('barang.barang-pdf', compact('barang'));
+    $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->stream('barang.pdf');
-    }
+    return $pdf->stream('barang.pdf');
+}
+    
+
 
     public function tambah()
     {
@@ -70,16 +94,16 @@ class BarangController extends Controller
         return redirect()->route('barang.index')->with('success', 'Data Barang Telah Berhasil Di Update');
     }
 
-    public function cari(Request $request)
-{
-    $searchTerm = $request->input('search');
+//     public function cari(Request $request)
+// {
+//     $searchTerm = $request->input('search');
 
-    $barang = Barang::where('nama_barang', 'LIKE', "%$searchTerm%")
-                     ->orWhere('jenis_barang', 'LIKE', "%$searchTerm%")
-                     ->get();
+//     $barang = Barang::where('nama_barang', 'LIKE', "%$searchTerm%")
+//                      ->orWhere('jenis_barang', 'LIKE', "%$searchTerm%")
+//                      ->get();
 
-    return view('barang.index', compact('barang'));
-}
+//     return view('barang.index', compact('barang'));
+// }
 
 
 
@@ -94,4 +118,3 @@ class BarangController extends Controller
     return redirect()->route('barang.index')->with('success', 'Data Barang Telah Berhasil Di Hapus');
 }
 }
-

@@ -22,4 +22,14 @@ class Barang extends Model
     {
         return $this->hasMany(Pembayaran::class, 'nama_barang_id');
     }
+
+    //search
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function($query, $search){
+            return $query->orWhere('nama_barang', 'like', '%' . $search . '%')
+                        ->orWhere('jenis_barang', 'like', '%' . $search . '%');  
+        });
+    }
 }

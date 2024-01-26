@@ -2,23 +2,22 @@
 
 <style>
     /* Tambahkan gaya border untuk tabel */
-.table-bordered {
-    border: 1px solid #000000;
-}
+    .table-bordered {
+        border: 1px solid #000000;
+    }
 
-/* Tambahkan padding pada sel tabel */
-.table td,
-.table th {
-    text-align: center;
-    padding: 8px;
-}
+    /* Tambahkan padding pada sel tabel */
+    .table td,
+    .table th {
+        text-align: center;
+        padding: 8px;
+    }
 
-/* Tambahkan gaya pada footer kartu */
-.card-footer {
-    background: lightblue;
-    padding: 10px;
-}
-
+    /* Tambahkan gaya pada footer kartu */
+    .card-footer {
+        background: lightblue;
+        padding: 10px;
+    }
 </style>
 <div class="table-responsive">
     <table border="1" class="table table-bordered" id="dataTable" width="100%" cellspacing="1">
@@ -34,16 +33,16 @@
         </thead>
         <tbody>
             @php($no = 1)
-            @foreach ($detail as $row)
-            <tr>
-                <th>{{ $no++ }}</th>
-                <td>{{ $row->barang->nama_barang }}</td>
-                <td>{{ $row->warna }}</td>
-                <td>{{ $row->ukuran }}</td>
-                <td>{{ $row->jumlah }}</td>
-                <td>Rp. {{ $row->harga_per_item }}</td>
-            </tr>
-            {{-- @if (is_numeric($row->total))
+            @foreach ($details as $row)
+                <tr>
+                    <th>{{ $no++ }}</th>
+                    <td>{{ $row->barang->nama_barang ?? 'Nama Barang' }}</td>
+                    <td>{{ $row->warna }}</td>
+                    <td>{{ $row->ukuran }}</td>
+                    <td>Rp. {{ $row->harga_per_item }}</td>
+                    <td>{{ $row->jumlah }}</td>
+                </tr>
+                {{-- @if (is_numeric($row->total))
             @php($totalPembayaran += $row->total)
             @endif --}}
             @endforeach
